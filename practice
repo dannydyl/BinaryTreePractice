@@ -1,0 +1,188 @@
+#include <iostream>
+#include <list>
+
+using namespace std;
+
+struct Node{
+    int elm;
+    char oper;
+    Node* parent;
+    Node* right;
+    Node* left;
+    Node():elm(), parent(NULL), left(NULL), right(NULL){}
+};
+
+//template <typename E>
+class Position{
+public:
+    Position(Node* c = NULL) :cursor(c){}
+    int& operator*(){
+        return cursor->elm;
+    }
+    Position left() const{ // move position to left
+        return Position(cursor->left);
+    }
+    Position right() const{ // move position to right
+        return Position(cursor->right);
+    }
+    Position parent() const{ // move position to parent
+        return Position(cursor->parent);
+    }
+    
+    bool isRoot()const{
+        if(cursor->parent == NULL){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+    
+    bool isLeaf()const{
+        if(cursor->right == NULL && cursor->left == NULL){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+    std::list<Position> PositionList;
+    friend class BinaryTree;
+private:
+    Node* cursor;
+};
+
+
+
+class BinaryTree{
+protected:
+    class Node;
+public:
+    class Position;
+    class PositionList;
+public:
+    BinaryTree();
+    int size()const;
+    bool empty()const;
+    Position root() const; // get the root
+    PositionList positions() const; //list of nodes
+    void addroot(); // add root to empty tree
+    void extendleft(const Position& p); // extend the tree
+    void extendright(const Position& p);
+    Position removeAboveExternal(const Position& p); //remove p and parent
+    void inorder(Node* v, PositionList& pl) const; // inorder utility
+private:
+    Node* Root; //pointer to the root
+    int n; // number of nodes in the tree
+    
+    
+};
+
+BinaryTree::BinaryTree(): Root(NULL), n(0){} // constructor
+
+int BinaryTree::size()const{
+	return n;
+}
+
+bool BinaryTree::empty()const{
+	if(size() == 0){
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+
+BinaryTree::Position BinaryTree::root()const{
+	return Position(Root);
+}
+
+BinaryTree::PositionList BinaryTree::positions()const{
+	return Position(PositionList);
+}
+
+void BinaryTree::addroot(){
+	Root = new Node;
+	n = 1;
+}
+
+void BinaryTree::extendleft(const Position& p){
+	Node* NewNode = new Node();
+	
+	p->left() = NewNode;
+	NewNode->parent = p;
+	
+	NewNode->left() = new Node;
+	NewNode->right() = new Node;
+	
+	NewNode->left()->parent() = NewNode;
+	NewNode->right()->parent() = NewNode;
+	
+	n += 2;
+}
+
+void BinaryTree::extendright(const Position& p){
+	Node* NewNode = new Node();
+	
+	p->right() = NewNode;
+	NewNode->parent = p;
+	
+	NewNode->left() = new Node;
+	NewNode->right() = new Node;
+	
+	NewNode->left()->parent() = NewNode;
+	NewNode->right()->parent() = NewNode;
+	
+	n += 2;
+}
+
+void BinaryTree::inorder(Node* v, PositionList& pl){
+	if(v != NULL){
+		BinaryTree.inorder(v->left);
+		pl.push_back(v->elm);
+		BinaryTree.inorder(v->right);
+	}
+	
+}
+
+
+
+int main(){
+    BinaryTree T;
+    std::list<Position> list;
+    
+    T.addroot();
+    T.Root().cursor->elm = '+';
+    
+    T.extendleft(T.Root());
+    T.Root().left().cursor->elm = '+';
+    
+    T.extendright(T.root());
+    T.root().right().cursor->elm = '*'
+    
+    T.extendright(T.Root().left());
+    T.Root().left().right().cursor->elm = '1';
+    
+    T.extendleft(T.Root().left());
+    T.Root().left().left().cursor->elm = '*';
+    
+    T.extendright(T.Root().left().left());
+    T.Root().left().left().right().cursor->elm = '3';
+    
+    T.extendleft(T.Root().left().left());
+    T.Root().left().left().left().cursor->elm = '*';
+    
+    T.extendright(T.root().right());
+    T.root().right().right().cursor->elm = '4';
+    
+    T.extendleft(T.Root().right());
+    T.Root().right().left().cursor->elm = '5';
+    
+    T.inorder(T.Root(), list);
+    
+    for(auto b : list){
+    	cout << b << " ";
+	}
+    
+}
+
